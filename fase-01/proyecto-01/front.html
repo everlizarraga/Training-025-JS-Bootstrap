@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ejercicios</title>
+  <style>
+    main>section {
+      margin: 20px;
+      border-bottom: 1px solid blue;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <section id="eje01">
+      <button id="btnLike">❤️ Me gusta</button>
+      <p>Likes: <span id="numLikes">0</span></p>
+    </section>
+    <section id="eje02">
+      <div id="miCaja" class="caja-normal">
+        Click en mí para cambiar
+      </div>
+      <style>
+        .caja-normal {
+          width: 200px;
+          height: 100px;
+          background-color: red;
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+
+        .caja-normal.destacado {
+          background-color: yellow;
+          color: black;
+          border: 5px solid orange;
+        }
+      </style>
+    </section>
+    <section id="eje03">
+      <input type="text" id="inputNombre" placeholder="Nombre para la tarjeta">
+      <button id="btnCrear">Crear Tarjeta</button>
+      <div id="contenedor"></div>
+
+      <style>
+        .tarjeta {
+          background-color: #e3f2fd;
+          border: 2px solid #2196f3;
+          border-radius: 8px;
+          padding: 15px;
+          margin: 10px 0;
+          width: 250px;
+        }
+
+        .tarjeta h3 {
+          margin: 0 0 10px 0;
+          color: #1976d2;
+        }
+
+        .tarjeta p {
+          margin: 0;
+          color: #666;
+        }
+      </style>
+      </style>
+    </section>
+    <section id="eje04">
+      <div class="caja-seleccionable">Caja 1</div>
+      <div class="caja-seleccionable">Caja 2</div>
+      <div class="caja-seleccionable">Caja 3</div>
+      <div class="caja-seleccionable">Caja 4</div>
+      <div class="caja-seleccionable">Caja 5</div>
+
+      <style>
+        .caja-seleccionable {
+          width: 150px;
+          height: 80px;
+          margin: 10px;
+          background-color: #ddd;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          border-radius: 5px;
+          transition: all 0.3s;
+        }
+
+        .caja-seleccionable.seleccionada {
+          background-color: #2196f3;
+          color: white;
+          transform: scale(1.05);
+        }
+      </style>
+    </section>
+    <section id="eje05">
+      <div>
+        <h2>Contador: <span id="contador">0</span></h2>
+        <button id="btnIncrementar">Incrementar</button>
+        <button id="btnReset">Resetear</button>
+      </div>
+
+      <p style="color: gray; font-size: 12px;">
+        El contador se guarda automáticamente.
+        Probá refrescar la página (F5) para ver la persistencia.
+      </p>
+    </section>
+
+  </main>
+  <script type="module" src="./eje01.js"></script>
+  <script type="module" src="./eje02.js"></script>
+  <script type="module" src="./eje03.js"></script>
+  <script type="module" src="./eje04.js"></script>
+  <script type="module" src="./eje05.js"></script>
+</body>
+
+</html>

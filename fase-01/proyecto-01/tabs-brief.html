@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabs Brief</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+</head>
+
+<body>
+  <main class="container-fluid">
+    <section class="container mt-5">
+      <!-- mt-5 = margin-top grande -->
+
+      <!-- Header -->
+      <div class="row mb-4">
+        <!-- mb-4 = margin-bottom -->
+
+        <div class="col">
+          <h1 class="text-center">Sistema de Tabs Dinámico</h1>
+          <p class="text-center text-muted">
+            Proyecto 1 - JavaScript + Bootstrap
+          </p>
+        </div>
+      </div>
+
+      <!-- Tabs Container -->
+      <div class="row">
+        <div class="col">
+          <!-- Aquí van los tabs (nav-tabs) -->
+          <ul class="nav nav-tabs" id="tabsNav">
+            <!-- Los tabs se van a agregar dinámicamente con JS -->
+          </ul>
+
+          <!-- Aquí va el contenido de los tabs -->
+          <div class="tab-content mt-3" id="tabsContent">
+            <!-- El contenido se agrega dinámicamente con JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón para agregar nuevo tab -->
+      <div class="row mt-4">
+        <div class="col text-center">
+          <button class="btn btn-primary" id="btnNuevoTab">
+            + Agregar Nuevo Tab
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"></script>
+  <script type="module" src="./tabs-brief.js"></script>
+</body>
+
+</html>
