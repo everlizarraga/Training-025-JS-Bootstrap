@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,101 +9,78 @@
     integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 
 </head>
+
 <body>
   <main>
-
-    <div class="container">
-        <div class="form-container">
-            <h2 class="text-center mb-4">Registro de Usuario</h2>
-            
-            <form id="formRegistro" novalidate>
-                <!-- novalidate = desactiva validación HTML5 (la hacemos con JS) -->
-                
-                <!-- Campo Nombre -->
-                <div class="mb-3">
-                    <label for="inputNombre" class="form-label">Nombre Completo</label>
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        id="inputNombre"
-                        placeholder="Juan Pérez">
-                    <div class="invalid-feedback" id="errorNombre">
-                        <!-- Mensaje de error dinámico -->
-                    </div>
-                </div>
-                
-                <!-- Campo Email -->
-                <div class="mb-3">
-                    <label for="inputEmail" class="form-label">Email</label>
-                    <input 
-                        type="email" 
-                        class="form-control" 
-                        id="inputEmail"
-                        placeholder="juan@example.com">
-                    <div class="invalid-feedback" id="errorEmail"></div>
-                </div>
-                
-                <!-- Campo Password -->
-                <div class="mb-3">
-                    <label for="inputPassword" class="form-label">Contraseña</label>
-                    <input 
-                        type="password" 
-                        class="form-control" 
-                        id="inputPassword">
-                    <div class="form-text">Mínimo 8 caracteres</div>
-                    <div class="invalid-feedback" id="errorPassword"></div>
-                </div>
-                
-                <!-- Campo Confirmar Password -->
-                <div class="mb-3">
-                    <label for="inputConfirmPassword" class="form-label">Confirmar Contraseña</label>
-                    <input 
-                        type="password" 
-                        class="form-control" 
-                        id="inputConfirmPassword">
-                    <div class="invalid-feedback" id="errorConfirmPassword"></div>
-                </div>
-                
-                <!-- Botón Submit -->
-                <div class="d-grid">
-                    <!-- d-grid = hace que el botón ocupe todo el ancho -->
-                    <button 
-                        type="submit" 
-                        class="btn btn-primary" 
-                        id="btnSubmit"
-                        disabled>
-                        Registrar
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
     
+    <div class="container">
+      <div class="form-container">
+        <h2 class="text-center mb-4">Registro de Usuario</h2>
+
+        <form id="formRegistro" novalidate>
+          <!-- novalidate = desactiva validación HTML5 (la hacemos con JS) -->
+
+          <!-- Campo Nombre -->
+          <div class="mb-3">
+            <label for="inputNombre" class="form-label">Nombre Completo</label>
+            <input type="text" class="form-control" id="inputNombre" placeholder="Juan Pérez">
+            <div class="invalid-feedback" id="errorNombre">
+              <!-- Mensaje de error dinámico -->
+            </div>
+          </div>
+
+          <!-- Campo Email -->
+          <div class="mb-3">
+            <label for="inputEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="inputEmail" placeholder="juan@example.com">
+            <div class="invalid-feedback" id="errorEmail"></div>
+          </div>
+
+          <!-- Campo Password -->
+          <div class="mb-3">
+            <label for="inputPassword" class="form-label">Contraseña</label>
+            <input type="password" class="form-control" id="inputPassword">
+            <div class="form-text">Mínimo 8 caracteres</div>
+            <div class="invalid-feedback" id="errorPassword"></div>
+          </div>
+
+          <!-- Campo Confirmar Password -->
+          <div class="mb-3">
+            <label for="inputConfirmPassword" class="form-label">Confirmar Contraseña</label>
+            <input type="password" class="form-control" id="inputConfirmPassword">
+            <div class="invalid-feedback" id="errorConfirmPassword"></div>
+          </div>
+
+          <!-- Botón Submit -->
+          <div class="d-grid">
+            <!-- d-grid = hace que el botón ocupe todo el ancho -->
+            <button type="submit" class="btn btn-primary" id="btnSubmit" disabled>
+              Registrar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- Modal de Confirmación -->
     <div class="modal fade" id="modalConfirmacion" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">✓ ¡Registro Exitoso!</h5>
-                    <button 
-                        type="button" 
-                        class="btn-close btn-close-white" 
-                        data-bs-dismiss="modal">
-                    </button>
-                </div>
-                <div class="modal-body" id="modalBody">
-                    <!-- Contenido dinámico con resumen de datos -->
-                </div>
-                <div class="modal-footer">
-                    <button 
-                        type="button" 
-                        class="btn btn-secondary" 
-                        data-bs-dismiss="modal">
-                        Cerrar
-                    </button>
-                </div>
-            </div>
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title">✓ ¡Registro Exitoso!</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal">
+            </button>
+          </div>
+          <div class="modal-body" id="modalBody">
+            <!-- Contenido dinámico con resumen de datos -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              Cerrar
+            </button>
+          </div>
         </div>
+      </div>
     </div>
 
   </main>
@@ -111,4 +89,5 @@
     crossorigin="anonymous"></script>
   <script type="module" src="./formulario-brief.js"></script>
 </body>
+
 </html>

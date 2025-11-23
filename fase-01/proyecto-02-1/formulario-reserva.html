@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reserva tu Mesa</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+
+<body>
+  <div class="container my-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+
+        <!-- ============================================ -->
+        <!-- CARD DEL FORMULARIO                         -->
+        <!-- ============================================ -->
+
+        <div class="card shadow-sm">
+          <div class="card-body p-4">
+            <h2 class="card-title text-center mb-4">Reserva tu Mesa</h2>
+
+            <form id="reservaForm" novalidate>
+
+              <!-- Campo: Nombre -->
+              <div class="mb-3">
+                <label for="inputNombre" class="form-label">Nombre completo</label>
+                <input type="text" class="form-control" id="inputNombre" placeholder="Juan Pérez">
+                <div class="invalid-feedback" id="errorNombre"></div>
+              </div>
+
+              <!-- Campo: Email -->
+              <div class="mb-3">
+                <label for="inputEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="inputEmail" placeholder="tu@email.com">
+                <div class="invalid-feedback" id="errorEmail"></div>
+              </div>
+
+              <!-- Campo: Teléfono -->
+              <div class="mb-3">
+                <label for="inputTelefono" class="form-label">Teléfono</label>
+                <input type="tel" class="form-control" id="inputTelefono" placeholder="+54 11 1234-5678">
+                <div class="invalid-feedback" id="errorTelefono"></div>
+                <div class="form-text">Formato: +54 11 1234-5678</div>
+              </div>
+
+              <!-- Campo: Fecha -->
+              <div class="mb-3">
+                <label for="inputFecha" class="form-label">Fecha de reserva</label>
+                <input type="date" class="form-control" id="inputFecha">
+                <div class="invalid-feedback" id="errorFecha"></div>
+              </div>
+
+              <!-- Campo: Cantidad de personas -->
+              <div class="mb-3">
+                <label for="inputPersonas" class="form-label">Cantidad de personas</label>
+                <input type="number" class="form-control" id="inputPersonas" placeholder="4" min="1" max="10">
+                <div class="invalid-feedback" id="errorPersonas"></div>
+                <div class="form-text">Máximo 10 personas</div>
+              </div>
+
+              <!-- Campo: Comentarios -->
+              <div class="mb-3">
+                <label for="inputComentarios" class="form-label">Comentarios especiales (opcional)</label>
+                <textarea class="form-control" id="inputComentarios" rows="3"
+                  placeholder="Ej: Mesa cerca de la ventana, cumpleaños, alergias..."></textarea>
+                <div class="invalid-feedback" id="errorComentarios"></div>
+              </div>
+
+              <!-- Campo: Términos y condiciones -->
+              <div class="mb-4">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="inputTerminos">
+                  <label class="form-check-label" for="inputTerminos">
+                    Acepto los <a href="#" data-bs-toggle="modal" data-bs-target="#modalTerminos">términos y
+                      condiciones</a>
+                  </label>
+                  <div class="invalid-feedback" id="errorTerminos"></div>
+                </div>
+              </div>
+
+              <!-- Botón Submit -->
+              <button type="submit" id="btnSubmit" class="btn btn-primary w-100" disabled>
+                Confirmar Reserva
+              </button>
+
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- MODAL DE CONFIRMACIÓN                       -->
+  <!-- ============================================ -->
+
+  <div class="modal fade" id="modalConfirmacion" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title">✓ Reserva Confirmada</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="modalBody">
+          <!-- Contenido dinámico generado por JavaScript -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- MODAL DE TÉRMINOS Y CONDICIONES            -->
+  <!-- ============================================ -->
+
+  <div class="modal fade" id="modalTerminos" tabindex="-1">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Términos y Condiciones</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>1. Reservas</strong></p>
+          <p>Las reservas están sujetas a disponibilidad. Se recomienda realizar la reserva con al menos 24 horas de
+            anticipación.</p>
+
+          <p><strong>2. Cancelaciones</strong></p>
+          <p>Las cancelaciones deben realizarse con al menos 2 horas de anticipación para evitar cargos.</p>
+
+          <p><strong>3. Tiempo de espera</strong></p>
+          <p>La mesa se mantendrá reservada por 15 minutos después de la hora programada.</p>
+
+          <p><strong>4. Política de privacidad</strong></p>
+          <p>Sus datos personales serán utilizados únicamente para la gestión de su reserva.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"></script>
+
+  <!-- Tu JavaScript -->
+  <script type="module" src="./formulario-reserva.js"></script>
+</body>
+
+</html>
