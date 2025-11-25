@@ -66,16 +66,16 @@ const modalBody = document.getElementById('modalBody');
 function validarNombre(nombre) {
     // Remover espacios al inicio/final
     const nombreLimpio = nombre.trim();
-    
+
     // Validaciones
     if (!nombreLimpio) {
         return { isValid: false, error: 'El nombre es requerido' };
     }
-    
+
     if (nombreLimpio.length < 3) {
         return { isValid: false, error: 'El nombre debe tener al menos 3 caracteres' };
     }
-    
+
     // Si pasa todas las validaciones
     return { isValid: true, error: '' };
 }
@@ -88,17 +88,17 @@ function validarNombre(nombre) {
 function validarEmail(email) {
     // Regex para email básico
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
+
     const emailLimpio = email.trim();
-    
+
     if (!emailLimpio) {
         return { isValid: false, error: 'El email es requerido' };
     }
-    
+
     if (!regex.test(emailLimpio)) {
         return { isValid: false, error: 'Email inválido (ejemplo: usuario@dominio.com)' };
     }
-    
+
     return { isValid: true, error: '' };
 }
 
@@ -111,18 +111,18 @@ function validarPassword(password) {
     if (!password) {
         return { isValid: false, error: 'La contraseña es requerida' };
     }
-    
+
     if (password.length < 8) {
         return { isValid: false, error: 'La contraseña debe tener al menos 8 caracteres' };
     }
-    
+
     // Opcional: Validar que tenga al menos una mayúscula, número, etc.
     // const tieneNumero = /\d/.test(password);
     // const tieneMayuscula = /[A-Z]/.test(password);
     // if (!tieneNumero || !tieneMayuscula) {
     //     return { isValid: false, error: 'Debe contener número y mayúscula' };
     // }
-    
+
     return { isValid: true, error: '' };
 }
 
@@ -136,11 +136,11 @@ function validarConfirmPassword(password, confirmPassword) {
     if (!confirmPassword) {
         return { isValid: false, error: 'Debes confirmar la contraseña' };
     }
-    
+
     if (password !== confirmPassword) {
         return { isValid: false, error: 'Las contraseñas no coinciden' };
     }
-    
+
     return { isValid: true, error: '' };
 }
 
@@ -157,9 +157,9 @@ function validarConfirmPassword(password, confirmPassword) {
  */
 function validarCampo(nombreCampo, valor) {
     let resultado;
-    
+
     // Ejecutar el validador correspondiente
-    switch(nombreCampo) {
+    switch (nombreCampo) {
         case 'nombre':
             resultado = validarNombre(valor);
             break;
@@ -177,17 +177,17 @@ function validarCampo(nombreCampo, valor) {
             resultado = validarConfirmPassword(formState.password.value, valor);
             break;
     }
-    
+
     // Actualizar estado del campo
     formState[nombreCampo] = {
         value: valor,
         isValid: resultado.isValid,
         error: resultado.error
     };
-    
+
     // Renderizar cambios en la UI
     renderizarEstadoCampo(nombreCampo);
-    
+
     // Actualizar estado del botón submit
     actualizarBotonSubmit();
 }
@@ -204,21 +204,21 @@ function renderizarEstadoCampo(nombreCampo) {
         password: inputPassword,
         confirmPassword: inputConfirmPassword
     };
-    
+
     const errores = {
         nombre: document.getElementById('errorNombre'),
         email: document.getElementById('errorEmail'),
         password: document.getElementById('errorPassword'),
         confirmPassword: document.getElementById('errorConfirmPassword')
     };
-    
+
     const input = inputs[nombreCampo];
     const errorElement = errores[nombreCampo];
     const estado = formState[nombreCampo];
-    
+
     // Remover clases anteriores
     input.classList.remove('is-valid', 'is-invalid');
-    
+
     // Solo mostrar estado si el usuario ya escribió algo
     if (estado.value) {
         if (estado.isValid) {
@@ -235,12 +235,12 @@ function renderizarEstadoCampo(nombreCampo) {
  */
 function actualizarBotonSubmit() {
     // El formulario es válido si TODOS los campos son válidos
-    const formularioValido = 
+    const formularioValido =
         formState.nombre.isValid &&
         formState.email.isValid &&
         formState.password.isValid &&
         formState.confirmPassword.isValid;
-    
+
     btnSubmit.disabled = !formularioValido;
 }
 
@@ -266,33 +266,33 @@ function configurarEventos() {
     inputNombre.addEventListener('input', (e) => {
         validarCampo('nombre', e.target.value);
     });
-    
+
     inputEmail.addEventListener('input', (e) => {
         validarCampo('email', e.target.value);
     });
-    
+
     inputPassword.addEventListener('input', (e) => {
         validarCampo('password', e.target.value);
     });
-    
+
     inputConfirmPassword.addEventListener('input', (e) => {
         validarCampo('confirmPassword', e.target.value);
     });
-    
+
     // Submit del formulario
     form.addEventListener('submit', (e) => {
         e.preventDefault();  // Evitar que recargue la página
-        
+
         // Validar todo antes de enviar (por si acaso)
         validarFormularioCompleto();
-        
+
         // Verificar que todo sea válido
-        const formularioValido = 
+        const formularioValido =
             formState.nombre.isValid &&
             formState.email.isValid &&
             formState.password.isValid &&
             formState.confirmPassword.isValid;
-        
+
         if (formularioValido) {
             mostrarModalConfirmacion();
         }
@@ -315,14 +315,14 @@ function mostrarModalConfirmacion() {
             <small>Tu contraseña ha sido guardada de forma segura.</small>
         </div>
     `;
-    
+
     modalBody.innerHTML = contenido;
-    
+
     // Mostrar el modal
     modal.show();
-    
+
     // Opcional: Limpiar formulario después de cerrar modal
-    modalElement.addEventListener('hidden.bs.modal', function() {
+    modalElement.addEventListener('hidden.bs.modal', function () {
         limpiarFormulario();
     }, { once: true });  // once: true → se ejecuta solo una vez
 }
@@ -333,18 +333,18 @@ function mostrarModalConfirmacion() {
 function limpiarFormulario() {
     // Limpiar inputs
     form.reset();
-    
+
     // Resetear estado
     formState.nombre = { value: '', isValid: false, error: '' };
     formState.email = { value: '', isValid: false, error: '' };
     formState.password = { value: '', isValid: false, error: '' };
     formState.confirmPassword = { value: '', isValid: false, error: '' };
-    
+
     // Remover clases de validación
     [inputNombre, inputEmail, inputPassword, inputConfirmPassword].forEach(input => {
         input.classList.remove('is-valid', 'is-invalid');
     });
-    
+
     // Deshabilitar botón submit
     btnSubmit.disabled = true;
 }
@@ -353,9 +353,9 @@ function limpiarFormulario() {
 // INICIALIZACIÓN
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     configurarEventos();
-    
+
     // Debug: ver estado en consola
     window.formState = formState;  // Para poder hacer console.log(formState) en DevTools
 });
