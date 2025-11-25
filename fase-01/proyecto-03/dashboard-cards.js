@@ -1,17 +1,22 @@
 // ============================================
 // DATOS
 // ============================================
+
+/**@typedef {'Laptops' | 'Accesorios' | 'Monitores' | 'Audio' | 'Almacenamiento' | 'Componentes'} Categoria */
+/**@typedef {'nombre-asc'|'nombre-desc'|'precio-asc'|'precio-desc'|'rating-desc'} Ordenamiento */
+
 /**
  * @typedef {{
  *  id: number,
  *  nombre: string,
- *  categoria: string,
+ *  categoria: Categoria,
  *  precio: number,
  *  rating: number,
  *  imagen: string,
  *  descripcion: string
  * }} Producto
  * */
+
 
 /**@type {Producto[]} */
 const productos = [
@@ -128,12 +133,13 @@ const productos = [
 // ============================================
 // ESTADO DE LA APLICACIÓN
 // ============================================
+
 /**
  * @typedef {{
  *  productosFiltrados: Producto[],
  *  busqueda: string,
- *  categoriaSeleccionada: string,
- *  ordenamiento: 'nombre-asc'|'nombre-desc'|'precio-asc'|'precio-desc'|'rating-asc'|'rating-desc'
+ *  categoriaSeleccionada: Categoria|'todos',
+ *  ordenamiento: Ordenamiento
  * }} AppState
  */
 
@@ -149,16 +155,25 @@ const appState = {
 // REFERENCIAS AL DOM
 // ============================================
 
+/**@type {HTMLInputElement} */
 const inputBuscar = document.getElementById('inputBuscar');
+/**@type {HTMLSelectElement} */
 const selectCategoria = document.getElementById('selectCategoria');
+/**@type {HTMLSelectElement} */
 const selectOrdenar = document.getElementById('selectOrdenar');
+/**@type {HTMLDivElement} */
 const productosContainer = document.getElementById('productosContainer');
+/**@type {HTMLDivElement} */
 const noResultados = document.getElementById('noResultados');
 
 // Stats
+/**@type {HTMLHeadingElement} */
 const statTotal = document.getElementById('statTotal');
+/**@type {HTMLHeadingElement} */
 const statPromedio = document.getElementById('statPromedio');
+/**@type {HTMLHeadingElement} */
 const statCategorias = document.getElementById('statCategorias');
+/**@type {HTMLHeadingElement} */
 const statRating = document.getElementById('statRating');
 
 // ============================================
@@ -167,9 +182,9 @@ const statRating = document.getElementById('statRating');
 
 /**
  * Filtrar productos por búsqueda
- * @param {Array} productos - Array de productos
+ * @param {Producto[]} productos - Array de productos
  * @param {string} busqueda - Texto de búsqueda
- * @returns {Array} - Productos filtrados
+ * @returns {Producto[]} - Productos filtrados
  */
 function filtrarPorBusqueda(productos, busqueda) {
   // TU CÓDIGO AQUÍ
@@ -178,16 +193,16 @@ function filtrarPorBusqueda(productos, busqueda) {
   // Hint: usar .filter() y .toLowerCase() para búsqueda case-insensitive
 
   // Ejemplo:
-  // return productos.filter(p => 
-  //     p.nombre.toLowerCase().includes(busqueda.toLowerCase())
-  // );
+  return productos.filter(p =>
+    p.nombre.toLowerCase().includes(busqueda.toLowerCase())
+  );
 }
 
 /**
  * Filtrar productos por categoría
- * @param {Array} productos - Array de productos
- * @param {string} categoria - Categoría seleccionada
- * @returns {Array} - Productos filtrados
+ * @param {Producto[]} productos - Array de productos
+ * @param {Categoria|'todos'} categoria - Categoría seleccionada
+ * @returns {Producto[]} - Productos filtrados
  */
 function filtrarPorCategoria(productos, categoria) {
   // TU CÓDIGO AQUÍ
@@ -195,18 +210,20 @@ function filtrarPorCategoria(productos, categoria) {
   // Si no, filtrar productos de esa categoría
 
   // Hint: usar .filter()
+  if(categoria === 'todos') return productos;
+  return productos.filter(p => p.categoria === categoria);
 }
 
 /**
  * Ordenar productos según criterio
- * @param {Array} productos - Array de productos
- * @param {string} criterio - Criterio de ordenamiento
- * @returns {Array} - Productos ordenados
+ * @param {Producto[]} productos - Array de productos
+ * @param {Ordenamiento} criterio - Criterio de ordenamiento
+ * @returns {Producto[]} - Productos ordenados
  */
 function ordenarProductos(productos, criterio) {
   // TU CÓDIGO AQUÍ
   // IMPORTANTE: Hacer copia del array antes de ordenar
-  // const copia = [...productos];
+  const copia = [...productos];
 
   // Usar switch para determinar tipo de ordenamiento:
   // case 'nombre-asc': ordenar alfabéticamente A-Z
@@ -214,14 +231,25 @@ function ordenarProductos(productos, criterio) {
   // case 'precio-asc': ordenar de menor a mayor precio
   // case 'precio-desc': ordenar de mayor a menor precio
   // case 'rating-desc': ordenar de mayor a menor rating
+  switch (criterio) {
+    case 'nombre-asc':
+      copia.sort((a, b) => a.nombre.localeCompare(b.nombre));
+      break;
+    case 'nombre-desc':
+      copia.sort((a, b) => b.nombre.localeCompare(a.nombre));
+      break;
+    case 'precio-asc':
+      copia.sort((a, b) => a.precio - b.precio);
+      break;
+    case 'precio-desc':
+      copia.sort((a, b) => b.precio - a.precio);
+      break;
+    case 'rating-desc':
+      copia.sort((a, b) => b.rating - a.rating);
+      break;
+  }
 
-  // Hint para ordenar strings:
-  // copia.sort((a, b) => a.nombre.localeCompare(b.nombre));
-
-  // Hint para ordenar números:
-  // copia.sort((a, b) => a.precio - b.precio);
-
-  // return copia;
+  return copia;
 }
 
 // ============================================
@@ -230,7 +258,7 @@ function ordenarProductos(productos, criterio) {
 
 /**
  * Generar HTML de una card de producto
- * @param {Object} producto - Objeto producto
+ * @param {Producto} producto - Objeto producto
  * @returns {string} - HTML de la card
  */
 function generarCardHTML(producto) {
@@ -238,22 +266,22 @@ function generarCardHTML(producto) {
   // Usar template literals para generar HTML
 
   // Estructura sugerida:
-  // <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-  //     <div class="card h-100">
-  //         <img src="${producto.imagen}" class="card-img-top">
-  //         <div class="card-body">
-  //             <h5 class="card-title">${producto.nombre}</h5>
-  //             <p class="card-text text-muted small">${producto.categoria}</p>
-  //             <p class="card-text"><strong>$${producto.precio}</strong></p>
-  //             <p class="card-text">${generarEstrellas(producto.rating)}</p>
-  //         </div>
-  //         <div class="card-footer">
-  //             <button class="btn btn-primary btn-sm w-100">Ver Detalles</button>
-  //         </div>
-  //     </div>
-  // </div>
+  const htmlTemplate = `<div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+      <div class="card h-100">
+          <img src="${producto.imagen}" class="card-img-top" alt="${producto.nombre}">
+          <div class="card-body">
+              <h5 class="card-title">${producto.nombre}</h5>
+              <p class="card-text text-muted small">${producto.categoria}</p>
+              <p class="card-text"><strong>$${producto.precio}</strong></p>
+              <p class="card-text">${generarEstrellas(producto.rating)}</p>
+          </div>
+          <div class="card-footer">
+              <button class="btn btn-primary btn-sm w-100">Ver Detalles</button>
+          </div>
+      </div>
+  </div>`
 
-  // return html;
+  return htmlTemplate;
 }
 
 /**
@@ -273,22 +301,22 @@ function generarEstrellas(rating) {
   // <i class="fas fa-star text-warning"></i>  ← Llena
   // <i class="far fa-star text-warning"></i>  ← Vacía
 
-  // let html = '';
-  // for (let i = 1; i <= 5; i++) {
-  //     if (i <= Math.floor(rating)) {
-  //         html += '<i class="fas fa-star text-warning"></i>';
-  //     } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
-  //         html += '<i class="fas fa-star-half-alt text-warning"></i>';
-  //     } else {
-  //         html += '<i class="far fa-star text-warning"></i>';
-  //     }
-  // }
-  // return html;
+  let html = '';
+  for (let i = 1; i <= 5; i++) {
+      if (i <= Math.floor(rating)) {
+          html += '<i class="fas fa-star text-warning"></i>';
+      } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
+          html += '<i class="fas fa-star-half-alt text-warning"></i>';
+      } else {
+          html += '<i class="far fa-star text-warning"></i>';
+      }
+  }
+  return html;
 }
 
 /**
  * Renderizar productos en el DOM
- * @param {Array} productos - Array de productos a renderizar
+ * @param {Producto[]} productos - Array de productos a renderizar
  */
 function renderizarProductos(productos) {
   // TU CÓDIGO AQUÍ
@@ -302,14 +330,14 @@ function renderizarProductos(productos) {
   //    - Insertar en productosContainer
 
   // Ejemplo:
-  // if (productos.length === 0) {
-  //     productosContainer.innerHTML = '';
-  //     noResultados.classList.remove('d-none');
-  // } else {
-  //     noResultados.classList.add('d-none');
-  //     const cardsHTML = productos.map(p => generarCardHTML(p)).join('');
-  //     productosContainer.innerHTML = cardsHTML;
-  // }
+  if (productos.length === 0) {
+      productosContainer.innerHTML = '';
+      noResultados.classList.remove('d-none');
+  } else {
+      noResultados.classList.add('d-none');
+      const cardsHTML = productos.map(p => generarCardHTML(p)).join('');
+      productosContainer.innerHTML = cardsHTML;
+  }
 }
 
 // ============================================
@@ -318,25 +346,25 @@ function renderizarProductos(productos) {
 
 /**
  * Calcular y actualizar estadísticas
- * @param {Array} productos - Array de productos
+ * @param {Producto[]} productos - Array de productos
  */
 function actualizarEstadisticas(productos) {
   // TU CÓDIGO AQUÍ
 
   // 1. Total de productos
-  //    statTotal.textContent = productos.length;
+  statTotal.textContent = productos.length;
 
   // 2. Precio promedio
-  //    const promedio = productos.reduce((sum, p) => sum + p.precio, 0) / productos.length;
-  //    statPromedio.textContent = '$' + promedio.toFixed(0);
+    const promedio = productos.reduce((sum, p) => sum + p.precio, 0) / productos.length;
+    statPromedio.textContent = '$' + promedio.toFixed(0);
 
   // 3. Cantidad de categorías únicas
-  //    const categorias = new Set(productos.map(p => p.categoria));
-  //    statCategorias.textContent = categorias.size;
+    const categorias = new Set(productos.map(p => p.categoria));
+    statCategorias.textContent = categorias.size;
 
   // 4. Rating promedio
-  //    const ratingPromedio = productos.reduce((sum, p) => sum + p.rating, 0) / productos.length;
-  //    statRating.textContent = ratingPromedio.toFixed(1);
+    const ratingPromedio = productos.reduce((sum, p) => sum + p.rating, 0) / productos.length;
+    statRating.textContent = ratingPromedio.toFixed(1);
 }
 
 // ============================================
@@ -350,25 +378,25 @@ function aplicarFiltros() {
   // TU CÓDIGO AQUÍ
 
   // 1. Empezar con todos los productos
-  // let productosFiltrados = [...productos];
+  let productosFiltrados = [...productos];
 
   // 2. Aplicar filtro de búsqueda
-  // productosFiltrados = filtrarPorBusqueda(productosFiltrados, appState.busqueda);
+  productosFiltrados = filtrarPorBusqueda(productosFiltrados, appState.busqueda);
 
   // 3. Aplicar filtro de categoría
-  // productosFiltrados = filtrarPorCategoria(productosFiltrados, appState.categoriaSeleccionada);
+  productosFiltrados = filtrarPorCategoria(productosFiltrados, appState.categoriaSeleccionada);
 
   // 4. Aplicar ordenamiento
-  // productosFiltrados = ordenarProductos(productosFiltrados, appState.ordenamiento);
+  productosFiltrados = ordenarProductos(productosFiltrados, appState.ordenamiento);
 
   // 5. Actualizar estado
-  // appState.productosFiltrados = productosFiltrados;
+  appState.productosFiltrados = productosFiltrados;
 
   // 6. Renderizar productos
-  // renderizarProductos(productosFiltrados);
+  renderizarProductos(productosFiltrados);
 
   // 7. Actualizar estadísticas
-  // actualizarEstadisticas(productosFiltrados);
+  actualizarEstadisticas(productosFiltrados);
 }
 
 // ============================================
@@ -381,6 +409,8 @@ function configurarEventos() {
     // TU CÓDIGO AQUÍ
     // 1. Actualizar appState.busqueda
     // 2. Llamar aplicarFiltros()
+    appState.busqueda = e.target.value;
+    aplicarFiltros();
   });
 
   // Evento: cambio de categoría
@@ -388,6 +418,8 @@ function configurarEventos() {
     // TU CÓDIGO AQUÍ
     // 1. Actualizar appState.categoriaSeleccionada
     // 2. Llamar aplicarFiltros()
+    appState.categoriaSeleccionada = e.target.value;
+    aplicarFiltros();
   });
 
   // Evento: cambio de ordenamiento
@@ -395,6 +427,8 @@ function configurarEventos() {
     // TU CÓDIGO AQUÍ
     // 1. Actualizar appState.ordenamiento
     // 2. Llamar aplicarFiltros()
+    appState.ordenamiento = e.target.value;
+    aplicarFiltros();
   });
 }
 
