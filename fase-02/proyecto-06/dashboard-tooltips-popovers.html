@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard con Tooltips y Popovers</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* Estilos custom para tooltips/popovers */
+    .tooltip {
+      font-size: 0.875rem;
+    }
+
+    .popover {
+      max-width: 350px;
+    }
+
+    .popover-header {
+      background-color: #0d6efd;
+      color: white;
+      font-weight: 600;
+    }
+
+    .info-icon {
+      cursor: pointer;
+      color: #0d6efd;
+      transition: all 0.3s;
+    }
+
+    .info-icon:hover {
+      color: #0a58ca;
+      transform: scale(1.1);
+    }
+
+    .stat-card {
+      transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .spec-list {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .spec-list li {
+      padding: 0.25rem 0;
+    }
+
+    .spec-list li:before {
+      content: "✓ ";
+      color: #198754;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container my-5">
+
+    <!-- ============================================ -->
+    <!-- HEADER                                       -->
+    <!-- ============================================ -->
+
+    <div class="row mb-4">
+      <div class="col">
+        <h1 class="display-4">
+          Dashboard de Productos
+          <i class="fas fa-info-circle info-icon ms-2" data-bs-toggle="tooltip" data-bs-placement="right"
+            title="Dashboard interactivo con información detallada de cada producto"></i>
+        </h1>
+        <p class="text-muted">Explora productos con información detallada</p>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- CONTROLES                                    -->
+    <!-- ============================================ -->
+
+    <div class="row mb-4">
+      <div class="col-12 col-md-4 mb-3 mb-md-0">
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="fas fa-search"></i>
+          </span>
+          <input type="text" class="form-control" id="inputBuscar" placeholder="Buscar productos..."
+            data-bs-toggle="tooltip" data-bs-placement="bottom" title="Busca por nombre o categoría">
+        </div>
+      </div>
+
+      <div class="col-6 col-md-4 mb-3 mb-md-0">
+        <select class="form-select" id="selectCategoria" data-bs-toggle="tooltip" data-bs-placement="bottom"
+          title="Filtra productos por categoría">
+          <option value="todos">Todas las categorías</option>
+          <option value="Laptops">Laptops</option>
+          <option value="Monitores">Monitores</option>
+          <option value="Accesorios">Accesorios</option>
+        </select>
+      </div>
+
+      <div class="col-6 col-md-4">
+        <select class="form-select" id="selectOrdenar" data-bs-toggle="tooltip" data-bs-placement="bottom"
+          title="Ordena los productos">
+          <option value="nombre-asc">Nombre (A-Z)</option>
+          <option value="precio-asc">Precio (Menor a Mayor)</option>
+          <option value="precio-desc">Precio (Mayor a Menor)</option>
+          <option value="rating-desc">Rating (Mayor a Menor)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ESTADÍSTICAS CON TOOLTIPS                    -->
+    <!-- ============================================ -->
+
+    <div class="row mb-4">
+      <div class="col-12 col-sm-6 col-md-3 mb-3">
+        <div class="card text-center stat-card" data-bs-toggle="tooltip" data-bs-placement="top"
+          title="Cantidad total de productos en el catálogo">
+          <div class="card-body">
+            <i class="fas fa-box fa-2x text-primary mb-2"></i>
+            <h5 class="card-title mb-0" id="statTotal">0</h5>
+            <p class="card-text text-muted small">Productos</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-3 mb-3">
+        <div class="card text-center stat-card" data-bs-toggle="tooltip" data-bs-placement="top"
+          title="Precio promedio de todos los productos">
+          <div class="card-body">
+            <i class="fas fa-dollar-sign fa-2x text-success mb-2"></i>
+            <h5 class="card-title mb-0" id="statPromedio">$0</h5>
+            <p class="card-text text-muted small">Precio Promedio</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-3 mb-3">
+        <div class="card text-center stat-card" data-bs-toggle="tooltip" data-bs-placement="top"
+          title="Unidades totales disponibles en stock">
+          <div class="card-body">
+            <i class="fas fa-warehouse fa-2x text-warning mb-2"></i>
+            <h5 class="card-title mb-0" id="statStock">0</h5>
+            <p class="card-text text-muted small">Stock Total</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-3 mb-3">
+        <div class="card text-center stat-card" data-bs-toggle="tooltip" data-bs-placement="top"
+          title="Calificación promedio de todos los productos">
+          <div class="card-body">
+            <i class="fas fa-star fa-2x text-danger mb-2"></i>
+            <h5 class="card-title mb-0" id="statRating">0</h5>
+            <p class="card-text text-muted small">Rating Promedio</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- GRID DE PRODUCTOS CON POPOVERS               -->
+    <!-- ============================================ -->
+
+    <div class="row" id="productosContainer">
+      <!-- Cards generadas dinámicamente aquí -->
+    </div>
+
+  </div>
+
+  <!-- Bootstrap JS -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"></script>
+
+  <!-- Tu JavaScript -->
+  <script type="module" src="./dashboard-tooltips-popovers.js"></script>
+</body>
+
+</html>
