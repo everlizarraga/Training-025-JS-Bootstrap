@@ -35,8 +35,10 @@ const Utils = {
     // TU CÓDIGO AQUÍ
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const taskDate = new Date(dateString);
-    return taskDate < today;
+    // const taskDate = new Date(dateString);
+    const [año, mes, dia] = dateString.split('-');
+    const fechaVencimiento = new Date(año, mes - 1, dia);
+    return fechaVencimiento < today;
   },
 
   /**

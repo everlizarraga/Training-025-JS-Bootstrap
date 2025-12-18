@@ -78,7 +78,26 @@ const modalEliminar = {
   }
 };
 
+// /////////////////////////////////////////////////
+// Estructura de validacion del modal
+// /////////////////////////////////////////////////
+/**
+ * @typedef {Object} EstadoInput
+ * @property {boolean} esValido
+ * @property {string} error
+ * @property {string} valor
+ */
+
+const appModalCrearEditarState = {
+  titulo: /**@type {EstadoInput} */({valor:'', esValido:false, error:''}),
+  descripcion: /**@type {EstadoInput} */({valor:'', esValido: false, error:''}),
+  fecha: /**@type {EstadoInput} */({valor:'', esValido:false, error:''})
+};
+
+// ////////////////////////////////////////////
 // HAY SUAURIO VIGENTE? ///////////////////
+// ////////////////////////////////////////////
+
 const usuarioLogueado = Storage.getCurrentUser();
 const URLhome = './index.html';
 if (!usuarioLogueado) {
@@ -150,6 +169,7 @@ function crearCardNode(task) {
   descripcion.style.whiteSpace = 'pre-wrap';
   const vencimiento = card.querySelector('.task-vencimiento');
   vencimiento.textContent = Utils.formatDate(task.fechaVencimiento);
+  vencimiento.setAttribute('data-fecha-vencimiento', task.fechaVencimiento);
   const categoria = card.querySelector('.categoria-badge');
   categoria.textContent = task.categoria;
   /**@type {HTMLInputElement} */
@@ -442,12 +462,44 @@ function renderizarCards() {
     procesarHighlightText(cards);
   }
 
+  // Tunear Tareas Vencidas
+  cards.forEach((card) => {
+    const task = /**@type {TaskXd}*/(card.taskInfo);
+    if(Utils.isOverdue(task.fechaVencimiento)) {
+      tunerCardVencida(card, 'vencida');
+    }
+  });
+
   // Configurar la card expandida o no
   requestAnimationFrame(() => {
     cards.forEach((c) => { configurarCardExpand(c) });
   });
 }
 renderizarCards();
+
+/**
+ * Tunera card vencida
+ * @param {HTMLDivElement} card 
+ * @param {'vencida'|'no-vencida'} vencida*/ 
+function tunerCardVencida(card, vencida) {
+  const fecha = card.querySelector('.task-vencimiento');
+  const iconoCalnedario = card.querySelector('.fa-calendar');
+  const padre = card.querySelector('small:has(.fa-calendar)');
+  if(vencida === 'vencida') {
+    fecha.classList.add('text-danger');
+    fecha.textContent = `¡Vencida! ${Utils.formatDate(fecha.getAttribute('data-fecha-vencimiento'))}`;
+    iconoCalnedario.classList.add('text-danger');
+    padre.classList.add('badge', 'bg-danger-subtle');
+    return;
+  }
+  if(vencida === 'no-vencida') {
+    fecha.classList.remove('text-danger');
+    fecha.textContent = Utils.formatDate(fecha.getAttribute('data-fecha-vencimiento'));
+    iconoCalnedario.classList.remove('text-danger');
+    padre.classList.remove('badge', 'bg-danger-subtle');
+    return;
+  }
+}
 
 //===================================================
 //===================================================
@@ -539,6 +591,7 @@ function administrarClickCard(element, card) {
     modalCrearEditar.limpiar();
     precompletarModalCrearEditar("edtiar", task);
     modalCrearEditar.bootstrap.show();
+    actualizarAppModalCrearEditarState();
     evaluarBtnGuardar();
     // Cambiar la funcion Guardar
     fn_crearEditar = () => {
@@ -637,18 +690,6 @@ function escapeRegex(string) {
 // ===================================================
 // VALIDACION DEL MODAL CREAR/EDITAR
 // ===================================================
-/**
- * @typedef {Object} EstadoInput
- * @property {boolean} esValido
- * @property {string} error
- * @property {string} valor
- */
-
-const appModalCrearEditarState = {
-  titulo: /**@type {EstadoInput} */({valor:'', esValido:false, error:''}),
-  descripcion: /**@type {EstadoInput} */({valor:'', esValido: false, error:''}),
-  fecha: /**@type {EstadoInput} */({valor:'', esValido:false, error:''})
-};
 
 /**
  * Validar Titulo
@@ -692,7 +733,9 @@ function validarFecha(fecha) {
   // Validar fecha pasada
   const hoy = new Date();
   hoy.setHours(0,0,0,0);
-  const fechaVencimiento = new Date(fecha);
+  // const fechaVencimiento = new Date(fecha);
+  const [año, mes, dia] = fecha.split('-');
+  const fechaVencimiento = new Date(año, mes - 1, dia);
   if(fechaVencimiento < hoy) {
     return {valor: fecha, esValido: false, error: 'La fecha no puede ser en el pasado'}
   }
@@ -775,6 +818,13 @@ function evaluarBtnGuardar() {
   modalCrearEditar.btnGuardar.disabled = !resultadoValido;
 }
 
+
+function actualizarAppModalCrearEditarState() {
+  appModalCrearEditarState.titulo = validarTitulo(elementosAEvaluar.inputs.titulo.value);
+  // appModalCrearEditarState.descripcion = validarDescripcion();
+  appModalCrearEditarState.fecha = validarFecha(elementosAEvaluar.inputs.fecha.value);
+}
+
 // ===================================================
 // ADDEVENT LISTENERS
 // ===================================================
@@ -783,7 +833,6 @@ function enlazarListeners() {
   inputBuscar.addEventListener('input', function (e) {
     appState.busqueda = e.target.value;
     renderizarCards();
-    //[FALTA] Logica de busqueda
     console.log(`> ${e.target.value}`);
   });
 
@@ -811,7 +860,6 @@ function enlazarListeners() {
     const modalidadAgregar = this.getAttribute('data-bs-whatever');
     modalCrearEditar.modoTitulo.textContent = modalidadAgregar;
     modalCrearEditar.inputId.value = Utils.generateId();
-    //[FALTA] Comprobacion del formulario
     fn_crearEditar = () => {
       const nuevaTarea = crearTareDelModal();
       Storage.saveTask(nuevaTarea);
