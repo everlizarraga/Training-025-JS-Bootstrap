@@ -276,11 +276,15 @@ function configurarCardExpand(card, expandType = 'auto') {
         descripcion.setAttribute('style', '');
         descripcion.style.transition = 'height 0.5s ease-in-out';
         descripcion.style.height = `${card['altoVisible']}px`;
-        requestAnimationFrame(() => {
-          setTimeout(() => {
-            descripcion.classList.add('descripcion-preview');
-          }, 500);
-        });
+        descripcion.addEventListener('transitionend', () => {
+          descripcion.classList.add('descripcion-preview');
+          console.warn('Termino transicion card');
+        }, {once: true});
+        // requestAnimationFrame(() => {
+        //   setTimeout(() => {
+        //     descripcion.classList.add('descripcion-preview');
+        //   }, 500);
+        // });
       }
       break;
     default:
