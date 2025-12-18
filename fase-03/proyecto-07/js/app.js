@@ -35,6 +35,7 @@ const btnAgregarTarea = document.querySelector('.btn-agregar-tarea');
 
 // Elementos Modal
 const modalCrearEditarElement = document.getElementById('modalTarea');
+const formCrearEditar = document.getElementById('formTarea');
 const modalCrearEditar = {
   modoTitulo: /**@type {HTMLHeadingElement} */(document.getElementById('modalTareaTitle')),
   inputId: /**@type {HTMLInputElement} */(document.getElementById('inputTareaId')),
@@ -899,6 +900,12 @@ function enlazarListeners() {
   });
   modalCrearEditar.inputFecha.addEventListener('input', function(e) {
     validarCampo('fecha', e.target.value);
+  });
+
+  formCrearEditar.addEventListener('submit', (e) => {
+    e.preventDefault();
+    actualizarAppModalCrearEditarState();
+    evaluarBtnGuardar();
   });
 }
 
