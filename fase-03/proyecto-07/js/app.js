@@ -195,7 +195,7 @@ function crearCardNode(task) {
  */
 function configurarCardExpand(card, expandType = 'auto') {
   // Asumimos que la card ya esta dibujada
-  const descripcion = card.querySelector('.text-descripcion-task');
+  const descripcion = /** @type {HTMLElement} */(card.querySelector('.text-descripcion-task'));
   const btnVer = card.querySelector('.btn-ver-mas');
   const btnText = btnVer.querySelector('span');
   const btnIcon = btnVer.querySelector('i');
@@ -252,9 +252,35 @@ function configurarCardExpand(card, expandType = 'auto') {
       break;
     case 'toggle':
       if(altoTotal > altoVisible) {
-        cardState.expandido();
+        // cardState.expandido();
+        descripcion.classList.remove('descripcion-preview');
+        btnState.mostrar();
+        btnState.mostrarMenos();
+        //Magia
+        descripcion.setAttribute('style', '');
+        descripcion.style.height = `${altoVisible}px`;
+        descripcion.classList.add('overflow-hidden');
+        card['altoVisible'] = altoVisible;
+        card['altoTotal'] = altoTotal;
+        requestAnimationFrame(() => {
+          descripcion.style.transition = 'height 0.5s ease-in-out';
+          descripcion.style.height = `${altoTotal}px`;
+        });
       } else {
-        cardState.reducido();
+        // cardState.reducido();
+        descripcion.classList.remove('descripcion-preview');
+        // descripcion.classList
+        btnState.mostrar();
+        btnState.mostrarMas();
+        //Magia
+        descripcion.setAttribute('style', '');
+        descripcion.style.transition = 'height 0.5s ease-in-out';
+        descripcion.style.height = `${card['altoVisible']}px`;
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            descripcion.classList.add('descripcion-preview');
+          }, 500);
+        });
       }
       break;
     default:
