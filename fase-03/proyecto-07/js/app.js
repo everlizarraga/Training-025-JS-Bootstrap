@@ -276,9 +276,11 @@ function configurarCardExpand(card, expandType = 'auto') {
         descripcion.setAttribute('style', '');
         descripcion.style.transition = 'height 0.5s ease-in-out';
         descripcion.style.height = `${card['altoVisible']}px`;
-        descripcion.addEventListener('transitionend', () => {
-          descripcion.classList.add('descripcion-preview');
-          console.warn('Termino transicion card');
+        descripcion.addEventListener('transitionend', (event) => {
+          if (event.propertyName === 'height') { // Me aseguto que sea la transicion correcta, porque pueden haber varias transiciones
+            descripcion.classList.add('descripcion-preview');
+            console.warn('Termino transicion card');
+          }
         }, {once: true});
         // requestAnimationFrame(() => {
         //   setTimeout(() => {
