@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Task Manager Pro</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-light">
+
+  <div class="container">
+    <div class="row justify-content-center align-items-center min-vh-100">
+      <div class="col-12 col-md-6 col-lg-4">
+
+        <div class="text-center mb-4">
+          <i class="fas fa-tasks fa-4x text-primary"></i>
+          <h1 class="h3 mt-3">Task Manager Pro</h1>
+          <p class="text-muted">Gestiona tus tareas de forma eficiente</p>
+        </div>
+
+        <div class="card shadow">
+          <div class="card-body p-4">
+            <h2 class="h5 text-center mb-4">Iniciar Sesión</h2>
+
+            <!-- Alert para errores -->
+            <div class="alert alert-danger d-none" id="alertError" role="alert"></div>
+
+            <form id="formLogin">
+              <div class="mb-3">
+                <label for="inputEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="inputEmail" required placeholder="tu@email.com">
+                <div class="invalid-feedback" id="errorEmail"></div>
+              </div>
+
+              <div class="mb-3">
+                <label for="inputPassword" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="inputPassword" required placeholder="Tu contraseña">
+                <div class="invalid-feedback" id="errorPassword"></div>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100" id="btnSubmit" disabled>
+                <i class="fas fa-sign-in-alt"></i>
+                <span>Iniciar Sesión</span>
+                <span 
+                  class="spinner-border spinner-border-sm d-none" 
+                  id="btnSpinner"></span>
+              </button>
+            </form>
+
+            <hr class="my-4">
+
+            <p class="text-center mb-0">
+              ¿No tienes cuenta?
+              <a href="register.html">Regístrate aquí</a>
+            </p>
+          </div>
+        </div>
+
+        <!-- Usuario demo para testing -->
+        <div class="alert alert-info mt-3 small" role="alert">
+          <strong>Demo:</strong> Email: demo@test.com | Password: demo123
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"></script>
+  <script type="module">
+    import * as Auth from "./js/auth.js";
+    /**
+     * @typedef {Object} CampoEstado
+     * @property {string} value
+     * @property {boolean} isValid
+     * @property {string} error
+     */
+
+    /**
+     * @typedef {Object} FormularioEstado
+     * @property {CampoEstado} email
+     * @property {CampoEstado} password
+     */
+
+    /**@typedef {'email'|'password'} NombreCampo */
+    
+    /**@type {FormularioEstado} */
+    const loginFormState = {
+      email: { value: '', isValid: false, error: '' },
+      password: { value: '', isValid: false, error: '' },
+    };
+
+    // Referencias al DOM
+    /**@type {HTMLInputElement | null}*/
+    const inputEmail = document.getElementById('inputEmail');
+    /**@type {HTMLInputElement | null}*/
+    const inputPassword = document.getElementById('inputPassword');
+    /**@type {HTMLDivElement | null}*/
+    const errorDivEmail = document.getElementById('errorEmail');
+    /**@type {HTMLDivElement | null}*/
+    const errorDivPassword = document.getElementById('errorPassword');
+    /**@type {HTMLButtonElement | null} */
+    const btnSubmit = document.getElementById('btnSubmit');
+    /**@type {HTMLFormElement | null}*/
+    const form = document.getElementById('formLogin');
+    /**@type {HTMLElement | null}*/
+    const btnCargaSpan = btnSubmit.querySelector('#btnSpinner');
+    /**@type {HTMLDivElement | null}*/
+    const alertDiv = document.getElementById('alertError');
+
+    btnSubmit.textoBase = btnSubmit.querySelector('span').textContent;
+    btnSubmit.textoCarga = 'Iniciando sesión...';
+
+    const inputsElement = {
+      email: inputEmail,
+      password: inputPassword
+    };
+
+    const inputsError = {
+      email: errorDivEmail,
+      password: errorDivPassword
+    };
+
+
+    /**
+     * Validar Email
+     * @param {string} email
+     * @returns {CampoEstado}
+    */
+    function validarEmail(email) {
+      const respuesta = Auth.validarEmail(email);
+      if(!respuesta.exito) {
+        // console.error(respuesta.mensaje);
+        return {
+          value: email,
+          isValid: false,
+          error: respuesta.mensaje
+        };
+      }
+      // console.log("Email valido");
+      return {
+        value: email,
+        isValid: true,
+        error: ''
+      };
+    }
+
+    /**
+     * Validar Password
+     * @param {string} password
+     * @returns {CampoEstado}
+    */
+    function validarPassword(password) {
+      const respuesta = Auth.validarPassword(password)
+      if(!respuesta.exito) {
+        // console.error(respuesta.mensaje);
+        return {
+          value: password,
+          isValid: false,
+          error: respuesta.mensaje
+        };
+      }
+      // console.log('Password valido');
+      return {
+        value: password,
+        isValid: true,
+        error: ''
+      };
+    }
+
+    /**
+     * Validar Campo - Gestor
+     * @param {NombreCampo} nombreCampo
+     * @param {string} valor
+    */
+    function validarCampo(nombreCampo, valor) {
+      let respuesta;
+      switch (nombreCampo) {
+        case 'email':
+          respuesta = validarEmail(valor);
+          break;
+        case 'password':
+          respuesta = validarPassword(valor);
+          break;
+        default:
+          break;
+      }
+      // Setar Status
+      const targetState = loginFormState[nombreCampo];
+      targetState.value = respuesta.value;
+      targetState.isValid = respuesta.isValid;
+      targetState.error = respuesta.error;
+
+      // Renderizar error o aceptacion
+      renderizarEstadoCampo(nombreCampo);
+
+      // Evaluar diponibilidad del boton
+      actualizarBotonSubmit();
+    }
+
+    /**
+     * Renderizar estado del campo
+     * @param {NombreCampo} nombreCampo
+    */
+    function renderizarEstadoCampo(nombreCampo) {
+      const input = inputsElement[nombreCampo];
+      const errorElement = inputsError[nombreCampo];
+      const estado = loginFormState[nombreCampo];
+      input.classList.remove('is-valid', 'is-invalid');
+      if(estado.value) { // Mostrar solo si el usuario escribio algo
+        if(estado.isValid) {
+          input.classList.add('is-valid');
+        } else {
+          input.classList.add('is-invalid');
+          errorElement.textContent = estado.error;
+        }
+      }
+    }
+
+    /**
+     * Actualizar (habilitar/deshabilitar) Btn Submit
+    */
+    function actualizarBotonSubmit() {
+      const formularioValidado = 
+        loginFormState.email.isValid &&
+        loginFormState.password.isValid;
+      btnSubmit.disabled = !formularioValidado;
+    }
+
+    function validarFormularioCompleto() {
+      validarCampo("email", loginFormState.email.value);
+      validarCampo("password", loginFormState.password.value);
+    }
+
+    inputsElement.email.addEventListener('input', (e) => {
+      /**@type {HTMLInputElement}*/
+      const target = e.target;
+      validarCampo("email", target.value);
+    });
+
+    inputsElement.password.addEventListener('input', (e) => {
+      /**@type {HTMLInputElement}*/
+      const target = e.target;
+      validarCampo("password", target.value);
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      validarFormularioCompleto(); // Necesario Volver a validar el formState
+      const formularioValidado = 
+        loginFormState.email.isValid &&
+        loginFormState.password.isValid;
+      if(!formularioValidado) {
+        console.error('Error inesperado de LoginFormState');
+        alertDiv.textContent = 'Error inesperado de LoginFormState';
+        return;
+      }
+      console.warn('Logueando datos ....');
+      //[FALTA] Hacer algo de confirmacion
+      btnCargaEffect(true);
+      btnSubmit.disabled = true;
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const email = loginFormState.email.value;
+      const password = loginFormState.password.value;
+      const resultadoLogin = await Auth.iniciarSesion(email, password);
+      console.log(resultadoLogin);
+
+      // Si No hay Login
+      if(!resultadoLogin.exito) {
+        alertDiv.textContent = resultadoLogin.mensaje;
+        alertDiv.classList.remove('d-none');
+        btnCargaEffect(false);
+        btnSubmit.disabled = false;
+        return;
+      }
+
+      //Si hay Login Exitoso
+      window.location.href = './dashboard.html';
+    });
+
+    function btnCargaEffect(trueFalse) {
+      const textBtn = btnSubmit.querySelector('span');
+      if(trueFalse) {
+        textBtn.textContent = btnSubmit.textoCarga;
+        btnCargaSpan.classList.remove('d-none');
+      } else {
+        textBtn.textContent = btnSubmit.textoBase;
+        btnCargaSpan.classList.add('d-none');
+      }
+    }
+
+
+
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro - Task Manager Pro</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-light">
+
+  <div class="container">
+    <div class="row justify-content-center align-items-center min-vh-100">
+      <div class="col-12 col-md-6 col-lg-5">
+
+        <div class="text-center mb-4">
+          <i class="fas fa-tasks fa-4x text-primary"></i>
+          <h1 class="h3 mt-3">Task Manager Pro</h1>
+          <p class="text-muted">Crea tu cuenta y empieza a organizarte</p>
+        </div>
+
+        <div class="card shadow">
+          <div class="card-body p-4">
+            <h2 class="h5 text-center mb-4">Crear Cuenta</h2>
+
+            <!-- Alert para errores -->
+            <div class="alert alert-danger d-none" id="alertError" role="alert"></div>
+
+            <form id="formRegister">
+              <!-- Nombre Completo -->
+              <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre Completo</label>
+                <input type="text" class="form-control" id="nombre" required placeholder="Tu nombre completo">
+                <div class="invalid-feedback"></div>
+              </div>
+
+              <!-- Email -->
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input 
+                  type="email" 
+                  class="form-control" 
+                  id="email" 
+                  required 
+                  placeholder="tu@email.com"
+                  name="email"
+                  autocomplete="username">
+                <div class="invalid-feedback"></div>
+              </div>
+
+              <!-- Contraseña -->
+              <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="password" required placeholder="Crea una contraseña">
+                <div class="invalid-feedback"></div>
+                <!-- Requisitos de contraseña (opcional: mostrar/ocultar con JS) -->
+                <small class="text-muted d-block mt-1">Mínimo 6 caracteres, incluye letra y número</small>
+              </div>
+
+              <!-- Confirmar Contraseña -->
+              <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+                <input type="password" class="form-control" id="confirmPassword" required
+                  placeholder="Confirma tu contraseña">
+                <div class="invalid-feedback"></div>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-user-plus"></i>
+                <span>Crear Cuenta</span>
+                <span 
+                  class="spinner-border spinner-border-sm d-none" 
+                  id="btnSpinner"></span>
+              </button>
+            </form>
+
+            <hr class="my-4">
+
+            <p class="text-center mb-0">
+              ¿Ya tienes cuenta?
+              <a href="login.html">Inicia sesión aquí</a>
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"></script>
+  <script type="module">
+    import * as Auth from "./js/auth.js";
+    /**
+     * @typedef {Object} CampoEstado
+     * @property {string} value
+     * @property {boolean} isValid
+     * @property {string} error
+     */
+
+    /**
+     * @typedef {Object} FormularioEstado
+     * @property {CampoEstado} nombre
+     * @property {CampoEstado} email
+     * @property {CampoEstado} password
+     * @property {CampoEstado} passwordConfirm
+     */
+
+    /**@type {FormularioEstado & {
+     * sonTodosValidos(): boolean
+    }}*/
+    const registerFormState = {
+      nombre: {value: '', isValid: false, error: ''},
+      email: {value: '', isValid: false, error: ''},
+      password: {value: '', isValid: false, error: ''},
+      passwordConfirm: {value: '', isValid: false, error: ''},
+      sonTodosValidos() {
+        return Object.keys(this)
+          .filter(key => typeof this[key] !== 'function')
+          .every(key => this[key].isValid);
+      }
+    };
+
+    // Elemtnos HMTL
+    /**@type {HTMLInputElement|null}*/
+    const inputNombre = document.getElementById('nombre');
+    /**@type {HTMLInputElement|null}*/
+    const inputEmail = document.getElementById('email');
+    /**@type {HTMLInputElement|null}*/
+    const inputPassword = document.getElementById('password');
+    /**@type {HTMLInputElement|null}*/
+    const inputPasswordConfirm = document.getElementById('confirmPassword');
+    /**@type {HTMLButtonElement|null}*/
+    const btnSubmit = document.querySelector('button[type="submit"]');
+    /**@type {HTMLFormElement|null}*/
+    const registerForm = document.getElementById('formRegister');
+
+    if(!btnSubmit) {
+      throw new Error("BTN submit no encontrado");
+    }
+
+    btnSubmit.textRegister = btnSubmit.querySelector('span').textContent;
+    btnSubmit.textProcesing = 'Registrando...';
+
+    const elementosDOM = {
+      inputs: {
+        nombre: inputNombre,
+        email: inputEmail,
+        password: inputPassword,
+        passwordConfirm: inputPasswordConfirm
+      },
+      errorFeedback: {
+        nombre: inputNombre.nextElementSibling,
+        email: inputEmail.nextElementSibling,
+        password: inputPassword.nextElementSibling,
+        passwordConfirm: inputPasswordConfirm.nextElementSibling
+      },
+      btns: {
+        btnSubmit: btnSubmit
+      },
+      forms: {
+        registerForm: registerForm
+      }
+    };
+
+    // Lógica específica de register.html
+    // TU CÓDIGO AQUÍ:
+    // - Validar formulario
+    /**
+     * 
+     * @param {string} nombre 
+     * @returns {{isValid: boolean, error: string}}
+    */
+    function validarNombre(nombre) {
+      /**@type {{exito: boolean, mensaje: string}}*/
+      const resultado = Auth.validarNombre(nombre);
+      return {
+        isValid: resultado.exito,
+        error: resultado.mensaje
+      };
+
+    }
+
+    /**
+     * 
+     * @param {string} email 
+     * @returns {{isValid: boolean, error: string}}
+    */
+    function validarEmail(email) {
+      /**@type {{exito: boolean, mensaje: string}}*/
+      const resultado = Auth.validarEmail(email);
+      return {
+        isValid: resultado.exito,
+        error: resultado.mensaje
+      };
+    }
+
+    /**
+     * 
+     * @param {string} password 
+     * @returns {{isValid: boolean, error: string}}
+    */
+    function validarPassword(password) {
+      /**@type {{exito: boolean, mensaje: string}}*/
+      const resultado = Auth.validarPassword(password);
+      return {
+        isValid: resultado.exito,
+        error: resultado.mensaje
+      };
+    }
+
+    /**
+     * 
+     * @param {string} password 
+     * @param {string} passwordConfirm 
+     * @returns {{isValid: boolean, error: string}}
+    */
+    function validarPasswordConfirm(password, passwordConfirm) {
+      if(password !== passwordConfirm) {
+        return {
+          isValid: false,
+          error: 'Las contraseñas no coinciden'
+        };
+      }
+      return {
+        isValid: true,
+        error: ''
+      };
+    }
+
+    /**
+     * Validar campo
+     * @param {'nombre'|'email'|'password'|'passwordConfirm'} campo
+     * @param {string} valor
+    */
+    function validarCampo(campo, valor) {
+      /**@type {{isValid: boolean, error: string}}*/
+      let resultado;
+      switch (campo) {
+        case 'nombre':
+          resultado = validarNombre(valor);
+          break;
+        case 'email':
+          resultado = validarEmail(valor);
+          break;
+        case 'password':
+          resultado = validarPassword(valor);
+          if(registerFormState.passwordConfirm.value) {
+            validarCampo("passwordConfirm", registerFormState.passwordConfirm.value);
+          }
+          break;
+        case 'passwordConfirm':
+          resultado = validarPasswordConfirm(valor, registerFormState.password.value);
+          break;
+      
+        default:
+          break;
+      }
+
+      // Modifico el Estado
+      registerFormState[campo] = {
+        value: valor,
+        isValid: resultado.isValid,
+        error: resultado.error
+      };
+
+      //Renderizo Feedback
+      renderizarEstadoCampo(campo);
+
+      //Actualizo el boton
+      actualizarBotonSubmit();
+    }
+
+    /**
+     * Renderizar Campo objetivo
+     * @param {'nombre'|'email'|'password'|'passwordConfirm'} campo
+    */
+    function renderizarEstadoCampo(campo) {
+      const input = elementosDOM.inputs[campo];
+      const divError = elementosDOM.errorFeedback[campo];
+      const estado = registerFormState[campo];
+      input.classList.remove('is-valid', 'is-invalid');
+      if(estado.value) {
+        if(estado.isValid) {
+          input.classList.add('is-valid');
+        } else {
+          input.classList.add('is-invalid');
+          divError.textContent = estado.error;
+        }
+      }
+    }
+
+    function actualizarBotonSubmit() {
+      const sonTodosEstadosValidos = registerFormState.sonTodosValidos();
+      const btn = elementosDOM.btns.btnSubmit;
+      btn.disabled = !sonTodosEstadosValidos;
+    }
+
+    function verificarTodosLosCamposDelEstado() {
+      validarCampo("nombre", registerFormState.nombre.value)
+      validarCampo("email", registerFormState.email.value)
+      validarCampo("password", registerFormState.password.value)
+      validarCampo("passwordConfirm", registerFormState.passwordConfirm.value);
+    }
+
+    //Listeners
+    elementosDOM.inputs.nombre.addEventListener('input', (e) => {
+      validarCampo("nombre", e.target.value);
+    });
+    elementosDOM.inputs.email.addEventListener('input', (e) => {
+      validarCampo("email", e.target.value);
+    });
+    elementosDOM.inputs.password.addEventListener('input', (e) => {
+      validarCampo("password", e.target.value);
+    });
+    elementosDOM.inputs.passwordConfirm.addEventListener('input', (e) => {
+      validarCampo("passwordConfirm", e.target.value);
+    });
+    elementosDOM.forms.registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      // Comprobar por ultima vez que todo ande bien
+      verificarTodosLosCamposDelEstado();
+      // Todos los campos ok?
+      const formEstado = registerFormState.sonTodosValidos();
+      if(!formEstado) {
+        throw new Error("RegisterFormState no validado correctamente");
+      }
+      //Cambiar boton submit en loading
+      btnSubmitCarga(true);
+      //Proceder con el registro
+      console.warn('Procesando el registro');
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      /**@type {{exito: boolean, mensaje: string}}*/
+      const resultado = await Auth.registrarUsuario(
+        registerFormState.nombre.value,
+        registerFormState.email.value,
+        registerFormState.password.value
+      );
+      console.log('Resultado register:', resultado);
+      if(!resultado.exito) {
+        const alertElement = document.getElementById('alertError');
+        alertElement.classList.remove('d-none');
+        alertElement.textContent = resultado.mensaje;
+        console.error(resultado.mensaje);
+        btnSubmitCarga(false);
+        return;
+      }
+      window.location.href = './dashboard.html';
+    });
+
+    function btnSubmitCarga(trueFalse) {
+      const btn = elementosDOM.btns.btnSubmit;
+      const spanLoader = btn.querySelector('#btnSpinner');
+      const textSpan = btnSubmit.querySelector('span');
+      if(trueFalse) {
+        textSpan.textContent = btn.textProcesing;
+        btn.disabled = true;
+        spanLoader.classList.remove('d-none');
+      } else {
+        textSpan.textContent = btn.textRegister;
+        actualizarBotonSubmit();
+        spanLoader.classList.add('d-none');
+      }
+    }
+
+  </script>
+</body>
+
+</html>

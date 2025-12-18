@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Task Manager Pro</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+
+  <!-- ============================================ -->
+  <!-- NAVBAR                                       -->
+  <!-- ============================================ -->
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-tasks"></i>
+        Task Manager Pro
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <span class="navbar-text me-3">
+              <i class="fas fa-user"></i>
+              <span id="userName">Usuario</span>
+            </span>
+          </li>
+          <li class="nav-item">
+            <button class="btn btn-outline-light btn-sm" id="btnLogout">
+              <i class="fas fa-sign-out-alt"></i>
+              Cerrar Sesión
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-4">
+
+    <!-- ============================================ -->
+    <!-- ESTADÍSTICAS                                 -->
+    <!-- ============================================ -->
+
+    <div class="row mb-4">
+      <div class="col-12 col-sm-6 col-md-3 mb-3">
+        <div class="card text-center">
+          <div class="card-body">
+            <i class="fas fa-clipboard-list fa-2x text-primary mb-2"></i>
+            <h5 class="card-title mb-0" id="statTotal">0</h5>
+            <p class="card-text text-muted small">Total Tareas</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-3 mb-3">
+        <div class="card text-center">
+          <div class="card-body">
+            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+            <h5 class="card-title mb-0" id="statCompletadas">0</h5>
+            <p class="card-text text-muted small">Completadas</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-3 mb-3">
+        <div class="card text-center">
+          <div class="card-body">
+            <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+            <h5 class="card-title mb-0" id="statPendientes">0</h5>
+            <p class="card-text text-muted small">Pendientes</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-3 mb-3">
+        <div class="card text-center">
+          <div class="card-body">
+            <i class="fas fa-exclamation-triangle fa-2x text-danger mb-2"></i>
+            <h5 class="card-title mb-0" id="statPorVencer">0</h5>
+            <p class="card-text text-muted small">Por Vencer</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- CONTROLES                                    -->
+    <!-- ============================================ -->
+
+    <div class="row mb-4">
+      <div class="col-12 mb-3">
+        <button class="btn btn-primary btn-agregar-tarea" data-bs-toggle="modal" data-bs-target="#modalTarea" data-bs-whatever="Nueva Tarea">
+          <i class="fas fa-plus"></i>
+          Nueva Tarea
+        </button>
+      </div>
+
+      <div class="col-12 col-md-4 mb-3">
+        <input type="text" class="form-control" id="inputBuscar" placeholder="Buscar tareas...">
+      </div>
+
+      <div class="col-6 col-md-2 mb-3">
+        <select class="form-select" id="selectEstado">
+          <option value="todas">Todas</option>
+          <option value="pendientes">Pendientes</option>
+          <option value="completadas">Completadas</option>
+        </select>
+      </div>
+
+      <div class="col-6 col-md-2 mb-3">
+        <select class="form-select" id="selectPrioridad">
+          <option value="todas">Todas</option>
+          <option value="alta">Alta</option>
+          <option value="media">Media</option>
+          <option value="baja">Baja</option>
+        </select>
+      </div>
+
+      <div class="col-12 col-md-4 mb-3">
+        <select class="form-select" id="selectOrdenar">
+          <option value="fecha-asc">Fecha (Más cercana)</option>
+          <option value="fecha-desc">Fecha (Más lejana)</option>
+          <option value="prioridad-desc">Prioridad (Alta a Baja)</option>
+          <option value="titulo-asc">Título (A-Z)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- LISTA DE TAREAS                              -->
+    <!-- ============================================ -->
+
+    <div class="row">
+      <div class="col-12">
+        <h4 class="mb-3">
+          Mis Tareas
+          <span class="badge bg-primary" id="badgeContador">0</span>
+        </h4>
+
+        <!-- Lista de tareas -->
+        <div id="listaTareas" class="row">
+          <!-- Tareas generadas dinámicamente aquí -->
+          <div id="tenplateTask" class="tarea-item card border-0 card-body mb-3 shadow-sm position-relative border-start border-danger border-4 rounded-3">
+
+            <!-- Botón eliminar (arriba derecha) -->
+            <button class="btn-mini btn-eliminar" title="Eliminar">
+              <i class="far fa-trash-alt"></i>
+            </button>
+
+            <!-- Contenido principal -->
+            <div class="tarea-contenido">
+              <div class="d-flex align-items-start">
+
+                <!-- Checkbox -->
+                <input type="checkbox" class="checkbox-tarea">
+
+                <!-- Info de la tarea -->
+                <div class="flex-grow-1">
+
+                  <!-- Título + Badge de prioridad -->
+                  <div class="titulo-badge-container mb-2">
+                    <strong class="tarea-titulo">Terminar el informe mensual</strong>
+                    <span class="badge-prioridad badge bg-danger">Alta</span>
+                  </div>
+
+                  <!-- Descripción (truncada) -->
+                  <div class="mb-2">
+                    <p class="text-descripcion-task text-muted small mb-1 descripcion-preview">
+                      Preparar el informe de resultados del mes de noviembre con todas las métricas y gráficos
+                      necesarios para la reunión de cierre. Incluir análisis comparativo con meses anteriores y
+                      proyecciones para el próximo trimestre.
+                    </p>
+                    <button class="btn-ver-mas">
+                      <span>Ver más </span><i class="fas fa-chevron-down"></i>
+                    </button>
+                  </div>
+
+                  <!-- Fecha + Categoría -->
+                  <div class="d-flex gap-3 align-items-center flex-wrap">
+                    <small class="text-muted">
+                      <i class="far fa-calendar icon-subtle me-1"></i>
+                      <span class="task-vencimiento">15/12/2024</span>
+                    </small>
+                    <span>
+                      <i class="fas fa-tag icon-subtle me-1"></i>
+                      <span class="
+                        categoria-badge 
+                        text-primary
+                        bg-primary-subtle
+                        badge" 
+                      >Trabajo</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botón editar (abajo derecha) -->
+            <button class="btn-mini btn-editar" title="Editar" data-bs-whatever="Editar Tarea">
+              <i class="fas fa-edit"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mensaje sin tareas -->
+        <div class="text-center py-5 d-none" id="sinTareas">
+          <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+          <h5 class="text-muted">No hay tareas</h5>
+          <p class="text-muted">¡Crea tu primera tarea!</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================================ -->
+  <!-- MODAL: CREAR/EDITAR TAREA                    -->
+  <!-- ============================================ -->
+
+  <div class="modal fade" id="modalTarea" tabindex="-1">
+    <div class="
+      modal-dialog 
+      modal-dialog-centered 
+      modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTareaTitle">Nueva Tarea</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formTarea">
+            <!-- Campo oculto para ID (cuando editamos) -->
+            <input type="hidden" id="inputTareaId">
+
+            <div class="mb-3">
+              <label for="tareaTitulo" class="form-label">Título *</label>
+              <input type="text" class="form-control" id="tareaTitulo" required maxlength="100">
+              <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="mb-3">
+              <label for="tareaDescripcion" class="form-label">Descripción</label>
+              <textarea class="form-control" id="tareaDescripcion" rows="3" maxlength="1500"></textarea>
+              <div class="form-text">Opcional</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="tareaFecha" class="form-label">Fecha de Vencimiento *</label>
+              <input type="date" class="form-control" id="tareaFecha" required>
+              <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="mb-3">
+              <label for="tareaPrioridad" class="form-label">Prioridad</label>
+              <select class="form-select" id="tareaPrioridad">
+                <option value="baja">Baja</option>
+                <option value="media" selected>Media</option>
+                <option value="alta">Alta</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="tareaCategoria" class="form-label">Categoría</label>
+              <select class="form-select" id="tareaCategoria">
+                <option value="Trabajo">Trabajo</option>
+                <option value="Personal">Personal</option>
+                <option value="Salud">Salud</option>
+                <option value="Estudio">Estudio</option>
+                <option value="Hogar">Hogar</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btnGuardarTarea" disabled>Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- MODAL: CONFIRMAR ELIMINACIÓN                 -->
+  <!-- ============================================ -->
+
+  <div class="modal fade" id="modalEliminar" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-danger text-white">
+          <h5 class="modal-title">Confirmar Eliminación</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Estás seguro de que deseas eliminar esta tarea?</p>
+          <p>Tarea: <strong id="modalTareaEliminar">Titulo de la tarea XD</strong></p>
+          <p class="text-muted mb-0">Esta acción no se puede deshacer.</p>
+          <input type="hidden" id="tareaIdEliminar">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">Eliminar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager Pro - Cargando...</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .loading-container {
+      text-align: center;
+      color: white;
+    }
+
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    .logo {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="loading-container">
+    <div class="logo">📋</div>
+    <h2>Task Manager Pro</h2>
+    <p class="mb-4">Verificando sesión...</p>
+    <div class="spinner-border text-light" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <script type="module">
+    import {Storage} from "./js/storage.js";
+    function existeSesionActiva() {
+      //1. Comprobar si existe sesion activa
+      const userActivo = Storage.getCurrentUser();
+      if (!userActivo) return false;
+      return true;
+    }
+
+    const haySesionActiva = existeSesionActiva();
+
+    /**
+     * Redirigir según estado de sesión
+     */
+    function redirigir() {
+      if (haySesionActiva) {
+        // Hay sesión → ir al dashboard
+        window.location.href = 'dashboard.html';
+      } else {
+        // No hay sesión → ir al login
+        window.location.href = 'login.html';
+      }
+    }
+
+    // Esperar un momento para mostrar el loading (UX)
+    // En producción podrías quitar el setTimeout
+    setTimeout(redirigir, 3000);
+  </script>
+
+</body>
+
+</html>
